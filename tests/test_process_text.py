@@ -7,3 +7,6 @@ def test_remove_symbols():
 
 def test_remove_number_dot_space():
     assert remove_number_dot_space("1. หวัดดี") == "หวัดดี"
+
+def test_remove_english_in_brackets():
+    assert remove_english_in_brackets("เฮลโหล (Hello) เวิรล์ด") == "เฮลโหล เวิรล์ด"
