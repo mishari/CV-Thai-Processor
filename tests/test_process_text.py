@@ -10,3 +10,6 @@ def test_remove_number_dot_space():
 
 def test_remove_english_in_brackets():
     assert remove_english_in_brackets("เฮลโหล (Hello) เวิรล์ด") == "เฮลโหล เวิรล์ด"
+
+def test_normalize_text():
+    assert normalize_text("ช้ี") == "ชี้"
