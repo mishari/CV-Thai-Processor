@@ -45,3 +45,15 @@ def test_convert_multiple_numbers_to_words():
 
 def test_baht_to_words():
     assert baht_to_word("20 บาท") == "ยี่สิบบาท"
+
+def test_expand_maiyamok():
+    assert expand_maiyamok("บัญญัติต่าง ๆ") == "บัญญัติต่างต่าง"
+
+def test_expand_maiyamok_without_maiyamok():
+    assert expand_maiyamok("บัญญัติต่าง") == "บัญญัติต่าง"
+
+def test_expand_multiple_maiyamoks():
+    assert expand_maiyamok("ต่างๆ นาๆ") == "ต่างต่าง นานา"
+
+def test_split_sentence_expands_maiyamok():
+    assert split_sentence("บัญญัติต่าง ๆ") == ["บัญญัติต่างต่าง"]

@@ -115,13 +115,23 @@ def normalize_text(text):
     return normalize(text)
 
 def baht_to_word(text):
-    return re.sub(r"([0-9๐-๙]+)", lambda x: x.group() + "บาท", text )
+    return re.sub(r"([0-9๐-๙]+)\s*บาท", lambda x: number_to_word(x.group(1)) + "บาท", text )
+
+def repeat_last_word(text):
+    words = word_tokenize(text)
+    return ''.join(words) + words[-1]
+
+def expand_maiyamok(text):
+    return re.sub("([^ๆ]+?)\s*ๆ", lambda x: repeat_last_word(x.group(1)), text)
+    
 
 def split_sentence(text):
     sentences = sent_tokenize(text)
     sentences = [s.strip() for s in sentences]
     sentences = [s.replace("\n", " ") for s in sentences]
+    sentences = [baht_to_word(s) for s in sentences]
     sentences = [number_to_word(s) for s in sentences]
+    sentences = [expand_maiyamok(s) for s in sentences]
     return sentences
 
 def number_to_word(text):
