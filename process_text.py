@@ -123,12 +123,16 @@ def repeat_last_word(text):
 
 def expand_maiyamok(text):
     return re.sub("([^ๆ]+?)\s*ๆ", lambda x: repeat_last_word(x.group(1)), text)
-    
+
+def strip_whitespace(text):
+    text = text.strip()
+    text = " ".join(text.split())
+    return text
 
 def split_sentence(text):
     sentences = sent_tokenize(text)
-    sentences = [s.strip() for s in sentences]
     sentences = [s.replace("\n", " ") for s in sentences]
+    sentences = [strip_whitespace(s) for s in sentences]
     sentences = [baht_to_word(s) for s in sentences]
     sentences = [number_to_word(s) for s in sentences]
     sentences = [expand_maiyamok(s) for s in sentences]

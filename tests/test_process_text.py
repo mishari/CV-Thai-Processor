@@ -55,5 +55,8 @@ def test_expand_maiyamok_without_maiyamok():
 def test_expand_multiple_maiyamoks():
     assert expand_maiyamok("ต่างๆ นาๆ") == "ต่างต่าง นานา"
 
-def test_split_sentence_expands_maiyamok():
-    assert split_sentence("บัญญัติต่าง ๆ") == ["บัญญัติต่างต่าง"]
+def test_split_sentence_expand_maiyamok():
+    assert expand_maiyamok("บัญญัติต่าง ๆ") == "บัญญัติต่างต่าง"
+
+def test_strip_whitespace():
+    assert strip_whitespace(" สวัสดี  วันพุธ ") == "สวัสดี วันพุธ"
