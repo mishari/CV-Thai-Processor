@@ -1,5 +1,6 @@
 import re
 from pythainlp.util import normalize
+from pythainlp.tokenize import sent_tokenize, word_tokenize
 
 # Parameters from https://github.com/common-voice/sentence-collector/blob/main/server/lib/validation/languages/th.js
 MIN_LENGTH = 6
@@ -73,6 +74,27 @@ INVALIDATION = [{
   "error": 'Sentence should not contain emojis or other special Unicode symbols',
 }]
 
+def is_length_valid(s):
+    if len(s) < MIN_LENGTH or len(s) > MAX_LENGTH:
+        return False
+    else:
+        return True
+
+def is_sentence_valid(s):
+    rules = INVALIDATION
+    valid = True
+
+    if not is_length_valid(s):
+        # print("INVALID LENGTH: " + s)
+        return False
+
+    for r in rules:
+        if re.search(r["regex"], s):
+            print(r["error"] + ": " + s)
+            return False
+
+    return valid
+
 def remove_symbols(text):
     symbols = ["●","*","•"]
     output = ''.join([c for c in text if c not in symbols])
@@ -88,6 +110,11 @@ def remove_english_in_brackets(text):
 
 def normalize_text(text):
     return normalize(text)
+
+def split_sentence(text):
+    sentences = sent_tokenize(text)
+    sentences = [s.strip() for s in sentences]
+    return sentences
 
 def main():
     pass
