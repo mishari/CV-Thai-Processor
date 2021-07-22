@@ -1,6 +1,9 @@
 import re
 from pythainlp.util import normalize
 from pythainlp.tokenize import sent_tokenize, word_tokenize
+from pythainlp.util import num_to_thaiword
+import fileinput
+import sys
 
 # Parameters from https://github.com/common-voice/sentence-collector/blob/main/server/lib/validation/languages/th.js
 MIN_LENGTH = 6
@@ -111,13 +114,25 @@ def remove_english_in_brackets(text):
 def normalize_text(text):
     return normalize(text)
 
+def baht_to_word(text):
+    return re.sub(r"([0-9๐-๙]+)", lambda x: x.group() + "บาท", text )
+
 def split_sentence(text):
     sentences = sent_tokenize(text)
     sentences = [s.strip() for s in sentences]
+    sentences = [s.replace("\n", " ") for s in sentences]
+    sentences = [number_to_word(s) for s in sentences]
     return sentences
 
+def number_to_word(text):
+
+    return re.sub(r"[0-9๐-๙]+", lambda x: num_to_thaiword(int(x.group())), text )
+
 def main():
-    pass
+    input = open(sys.argv[1],"r").read()
+    sentences = split_sentence(input)
+    for s in sentences:
+        is_sentence_valid(s)
 
 if __name__ == "__main__":
     main()
