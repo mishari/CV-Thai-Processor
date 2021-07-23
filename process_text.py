@@ -115,9 +115,6 @@ def remove_english_in_brackets(text):
 def normalize_text(text):
     return normalize(text)
 
-def baht_to_word(text):
-    return re.sub(r"([0-9๐-๙]+)\s*บาท", lambda x: number_to_word(x.group(1)) + "บาท", text )
-
 def repeat_last_word(text):
     words = word_tokenize(text)
     return ''.join(words) + words[-1]
@@ -136,15 +133,13 @@ def split_sentence(text):
     sentences = [remove_symbols(s) for s in sentences]
     sentences = [remove_english_in_brackets(s) for s in sentences]
     sentences = [remove_number_dot_space(s) for s in sentences]
-    sentences = [baht_to_word(s) for s in sentences]
     sentences = [number_to_word(s) for s in sentences]
     sentences = [expand_maiyamok(s) for s in sentences]
     sentences = [strip_whitespace(s) for s in sentences]
     return sentences
 
 def number_to_word(text):
-
-    return re.sub(r"[0-9๐-๙]+", lambda x: num_to_thaiword(int(x.group())), text )
+    return re.sub(r"\s*([0-9๐-๙]+)\s*", lambda x: num_to_thaiword(int(x.group(1))), text )
 
 def main():
     input = open(sys.argv[1],"r").read()

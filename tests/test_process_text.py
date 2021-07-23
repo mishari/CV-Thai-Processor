@@ -29,22 +29,28 @@ def test_newlines_into_spaces():
     assert split_sentence("ฉันทำ\nการบ้าน\nที่ยาก") == ["ฉันทำ การบ้าน ที่ยาก"]
 
 def test_convert_roman_number_to_word():
-    assert number_to_word("พ.ศ. 2497") == "พ.ศ. สองพันสี่ร้อยเก้าสิบเจ็ด"
+    assert number_to_word("พ.ศ. 2497") == "พ.ศ.สองพันสี่ร้อยเก้าสิบเจ็ด"
 
 def test_convert_thai_number_to_word():
-    assert number_to_word("พ.ศ. ๒๔๙๗") == "พ.ศ. สองพันสี่ร้อยเก้าสิบเจ็ด"
+    assert number_to_word("พ.ศ. ๒๔๙๗") == "พ.ศ.สองพันสี่ร้อยเก้าสิบเจ็ด"
 
 def test_convert_thai_number_to_word_matches_entire_string():
-    assert number_to_word("พ.ศ. ๒๔๙๗.") == "พ.ศ. สองพันสี่ร้อยเก้าสิบเจ็ด."
+    assert number_to_word("พ.ศ. ๒๔๙๗.") == "พ.ศ.สองพันสี่ร้อยเก้าสิบเจ็ด."
 
 def test_convert_thai_number_to_word_no_numbers():
     assert number_to_word("ฉันทำการบ้าน") == "ฉันทำการบ้าน"
 
 def test_convert_multiple_numbers_to_words():
-    assert number_to_word("มาตรา ๘๔[๔๔]") == "มาตรา แปดสิบสี่[สี่สิบสี่]"
+    assert number_to_word("มาตรา ๘๔[๔๔]") == "มาตราแปดสิบสี่[สี่สิบสี่]"
+
+def test_remove_space_before_after_number():
+    input = "ไปทำงาน 20 วัน"
+    output = "ไปทำงานยี่สิบวัน"
+    assert number_to_word(input) == output
+    assert split_sentence(input) == [output]
 
 def test_baht_to_words():
-    assert baht_to_word("20 บาท") == "ยี่สิบบาท"
+    assert split_sentence("20 บาท") == ["ยี่สิบบาท"]
 
 def test_expand_maiyamok():
     assert expand_maiyamok("บัญญัติต่าง ๆ") == "บัญญัติต่างต่าง"
