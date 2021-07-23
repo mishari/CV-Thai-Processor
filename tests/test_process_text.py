@@ -60,3 +60,9 @@ def test_split_sentence_expand_maiyamok():
 
 def test_strip_whitespace():
     assert strip_whitespace(" สวัสดี  วันพุธ ") == "สวัสดี วันพุธ"
+
+def test_remove_commas():
+    input = "20,000"
+    output = "20000"
+    assert remove_symbols(input) == output
+    assert split_sentence(input) == ["สองหมื่น"]

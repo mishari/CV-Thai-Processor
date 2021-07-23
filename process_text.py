@@ -100,7 +100,7 @@ def is_sentence_valid(s):
     return valid
 
 def remove_symbols(text):
-    symbols = ["●","*","•","★", "◆"]
+    symbols = ["●","*","•","★", "◆",","]
     output = ''.join([c for c in text if c not in symbols])
     return output
 
@@ -153,6 +153,7 @@ def main():
     inputs = input.split("\n\n")
 
     sentences = set()
+    new_sentences = set()
 
     pool = Pool()
 
@@ -162,6 +163,13 @@ def main():
     for s in sentences:
         if is_sentence_valid(s):
             output.write(s + "\n")
+        else:
+            for n in s.split(" "):
+                if is_sentence_valid(n):
+                    new_sentences.add(n)
+    
+    for s in new_sentences:
+       output.write(s + "\n")
 
     output.close()
 
