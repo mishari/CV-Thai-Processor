@@ -4,6 +4,7 @@ from pythainlp.tokenize import sent_tokenize, word_tokenize
 from pythainlp.util import num_to_thaiword
 import fileinput
 import sys
+from multiprocessing import Pool
 
 # Parameters from https://github.com/common-voice/sentence-collector/blob/main/server/lib/validation/languages/th.js
 MIN_LENGTH = 6
@@ -88,7 +89,7 @@ def is_sentence_valid(s):
     valid = True
 
     if not is_length_valid(s):
-        # print("INVALID LENGTH: " + s)
+        print("INVALID LENGTH: " + s)
         return False
 
     for r in rules:
@@ -99,7 +100,7 @@ def is_sentence_valid(s):
     return valid
 
 def remove_symbols(text):
-    symbols = ["●","*","•"]
+    symbols = ["●","*","•","★", "◆"]
     output = ''.join([c for c in text if c not in symbols])
     return output
 
@@ -132,10 +133,13 @@ def strip_whitespace(text):
 def split_sentence(text):
     sentences = sent_tokenize(text)
     sentences = [s.replace("\n", " ") for s in sentences]
-    sentences = [strip_whitespace(s) for s in sentences]
+    sentences = [remove_symbols(s) for s in sentences]
+    sentences = [remove_english_in_brackets(s) for s in sentences]
+    sentences = [remove_number_dot_space(s) for s in sentences]
     sentences = [baht_to_word(s) for s in sentences]
     sentences = [number_to_word(s) for s in sentences]
     sentences = [expand_maiyamok(s) for s in sentences]
+    sentences = [strip_whitespace(s) for s in sentences]
     return sentences
 
 def number_to_word(text):
@@ -144,9 +148,22 @@ def number_to_word(text):
 
 def main():
     input = open(sys.argv[1],"r").read()
-    sentences = split_sentence(input)
+    output = open(sys.argv[2],"w")
+
+    inputs = input.split("\n\n")
+
+    sentences = set()
+
+    pool = Pool()
+
+    for s in pool.imap_unordered(split_sentence,inputs):
+        sentences.update(s)
+
     for s in sentences:
-        is_sentence_valid(s)
+        if is_sentence_valid(s):
+            output.write(s + "\n")
+
+    output.close()
 
 if __name__ == "__main__":
     main()
