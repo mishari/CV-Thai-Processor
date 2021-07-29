@@ -77,3 +77,9 @@ def test_strip_quotes():
     input = '"สวัสดีวันพุธ"'
     output = "สวัสดีวันพุธ"
     assert remove_all_quotes(input) == output
+
+def test_remove_emojis():
+    input = "🌨ควีนฟ้า👑"
+    output = "ควีนฟ้า"
+
+    assert remove_symbols(input) == output
