@@ -10,7 +10,7 @@ from multiprocessing import Pool
 MIN_LENGTH = 6
 MAX_LENGTH = 100
 
-INVALIDATION = [{
+CV_INVALIDATION = [{
   "regex": '[0-9๐-๙]',
   "error": 'Sentence should not contain numbers',
 }, {
@@ -77,6 +77,13 @@ INVALIDATION = [{
   "regex": '(\u00a9|\u00ae|[\u2000-\u3300]|[\u2580-\u27bf]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|[\ue000-\uf8ff])',
   "error": 'Sentence should not contain emojis or other special Unicode symbols',
 }]
+
+TP_INVALIDATION = [{
+  "regex": '\u0E3A',
+  "error": 'Sentence should not contain Pinthu as its difficult to read',
+}]
+
+INVALIDATION = CV_INVALIDATION + TP_INVALIDATION
 
 def is_length_valid(s):
     if len(s) < MIN_LENGTH or len(s) > MAX_LENGTH:

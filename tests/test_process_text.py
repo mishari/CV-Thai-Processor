@@ -83,3 +83,8 @@ def test_remove_emojis():
     output = "ควีนฟ้า"
 
     assert remove_symbols(input) == output
+
+def test_remove_pintu():
+    input = "สฺวากฺขาโต"
+
+    assert is_sentence_valid(input) == False
