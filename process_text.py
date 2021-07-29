@@ -128,18 +128,31 @@ def strip_whitespace(text):
     return text
 
 def split_sentence(text):
-    sentences = sent_tokenize(text)
-    sentences = [s.replace("\n", " ") for s in sentences]
-    sentences = [remove_symbols(s) for s in sentences]
-    sentences = [remove_english_in_brackets(s) for s in sentences]
-    sentences = [remove_number_dot_space(s) for s in sentences]
-    sentences = [number_to_word(s) for s in sentences]
-    sentences = [expand_maiyamok(s) for s in sentences]
-    sentences = [strip_whitespace(s) for s in sentences]
-    return sentences
+    tokenized_sentences = sent_tokenize(text)
+    tokenized_sentences = [s.replace("\n", " ") for s in tokenized_sentences]
+    tokenized_sentences = [remove_symbols(s) for s in tokenized_sentences]
+    tokenized_sentences = [remove_english_in_brackets(s) for s in tokenized_sentences]
+    tokenized_sentences = [remove_number_dot_space(s) for s in tokenized_sentences]
+    tokenized_sentences = [number_to_word(s) for s in tokenized_sentences]
+    tokenized_sentences = [expand_maiyamok(s) for s in tokenized_sentences]
+    tokenized_sentences = [strip_whitespace(s) for s in tokenized_sentences]
+    tokenized_sentences = [s.strip('"') for s in tokenized_sentences]
+    return tokenized_sentences
 
 def number_to_word(text):
     return re.sub(r"\s*([0-9๐-๙]+)\s*", lambda x: num_to_thaiword(int(x.group(1))), text )
+
+def remove_all_quotes(text):
+    return text.replace('"','')
+
+def second_split_sentence(sentences):
+    new_sentences = []
+    for n in sentences.split(" "):
+        if is_sentence_valid(n):
+            n = remove_all_quotes(n)
+            n = n.strip('"')
+            new_sentences.append(n)
+    return new_sentences
 
 def main():
     input = open(sys.argv[1],"r").read()
@@ -148,25 +161,17 @@ def main():
     inputs = input.split("\n\n")
 
     sentences = set()
-    new_sentences = set()
 
     pool = Pool()
 
     for s in pool.imap_unordered(split_sentence,inputs):
-        sentences.update(s)
+        for k in s:
+            if is_sentence_valid(k):
+                sentences.add(k)
+            else:
+                sentences.update(second_split_sentence(k))
 
-    for s in sentences:
-        if is_sentence_valid(s):
-            output.write(s + "\n")
-        else:
-            for n in s.split(" "):
-                if is_sentence_valid(n):
-                    new_sentences.add(n)
-    
-    for s in new_sentences:
-       output.write(s + "\n")
-
-    output.close()
+    output.writelines([s + "\n" for s in sentences])
 
 if __name__ == "__main__":
     main()

@@ -72,3 +72,8 @@ def test_remove_commas():
     output = "20000"
     assert remove_symbols(input) == output
     assert split_sentence(input) == ["สองหมื่น"]
+
+def test_strip_quotes():
+    input = '"สวัสดีวันพุธ"'
+    output = "สวัสดีวันพุธ"
+    assert remove_all_quotes(input) == output
