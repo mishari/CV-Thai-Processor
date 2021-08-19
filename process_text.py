@@ -5,6 +5,9 @@ from pythainlp.util import num_to_thaiword
 import fileinput
 import sys
 from multiprocessing import Pool
+import argparse
+
+import pythaispell
 
 # Parameters from https://github.com/common-voice/sentence-collector/blob/main/server/lib/validation/languages/th.js
 MIN_LENGTH = 6
@@ -81,6 +84,9 @@ CV_INVALIDATION = [{
 TP_INVALIDATION = [{
   "regex": '\u0E3A',
   "error": 'Sentence should not contain Pinthu as its difficult to read',
+}, {
+    "regex": r"([ก-ฮ])\1{2,}",
+    "error": 'Sentence should not contain three repeating characters',
 }]
 
 INVALIDATION = CV_INVALIDATION + TP_INVALIDATION
@@ -105,6 +111,14 @@ def is_sentence_valid(s):
             return False
 
     return valid
+
+def is_spelling_valid(text):
+    spelling = pythaispell.spell(text)
+
+    if text == spelling:
+        return True
+    else:
+        return False
 
 def remove_symbols(text):
     symbols = ["●","*","•","★", "◆",","]
@@ -163,6 +177,7 @@ def split_sentence(text):
     tokenized_sentences = [remove_symbols(s) for s in tokenized_sentences]
     tokenized_sentences = [remove_english_in_brackets(s) for s in tokenized_sentences]
     tokenized_sentences = [remove_number_dot_space(s) for s in tokenized_sentences]
+    tokenized_sentences = [replace_percent(s) for s in tokenized_sentences]
     tokenized_sentences = [number_to_word(s) for s in tokenized_sentences]
     tokenized_sentences = [expand_maiyamok(s) for s in tokenized_sentences]
     tokenized_sentences = [strip_whitespace(s) for s in tokenized_sentences]
@@ -175,6 +190,18 @@ def number_to_word(text):
 def remove_all_quotes(text):
     return text.replace('"','')
 
+def replace_percent(text):
+    return text.replace('%','เปอร์เซ็นต์')
+
+def replace_time(text):
+    if re.search("(\d{1,2})[:.](\d{1,2})[-]+(\d{1,2})[:.](\d{1,2})\s?น.", text):
+        text = re.sub(r"\s*(\d{1,2})[:.](\d{1,2})[-]+(\d{1,2})[:.](\d{1,2})\s?น.\s*", lambda x: "blah " + x.group(1) + "halb " + x.group(2), text )
+        return text
+    elif re.search("(\d{1,2})[:.](\d{1,2})\s?น.", text):
+        return "match2"
+    else:
+        return "Match 3"
+
 def second_split_sentence(sentences):
     new_sentences = []
     for n in sentences.split(" "):
@@ -184,22 +211,38 @@ def second_split_sentence(sentences):
             new_sentences.append(n)
     return new_sentences
 
+def pool_is_spelling_valid(text):
+    if is_spelling_valid(text):
+        return text
+    else:
+        return None
+
 def main():
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-i', help='Input file')
+    # parser.add_argument('-o', help='Output file')
+    # parser.add_argument('-s', help='Perform spell check')
+    # args = parser.parse_args()
+
     input = open(sys.argv[1],"r").read()
     output = open(sys.argv[2],"w")
 
-    inputs = input.split("\n\n")
-
-    sentences = set()
+    inputs = input.split("\n")
 
     pool = Pool()
+    sentences = set()
 
-    for s in pool.imap_unordered(split_sentence,inputs):
-        for k in s:
-            if is_sentence_valid(k):
-                sentences.add(k)
+    for q in pool.imap_unordered(split_sentence,inputs):
+        for s in q:
+            if is_sentence_valid(s) == True:
+                sentences.add(s)
             else:
-                sentences.update(second_split_sentence(k))
+                try:
+                    sentences.update(second_split_sentence(s))
+                except ValueError:
+                    sentences.add(s)
+
+    # sentences = [x for x in pool.imap_unordered(pool_is_spelling_valid,sentences) if x is not None]
 
     output.writelines([s + "\n" for s in sentences])
 

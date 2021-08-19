@@ -1,2 +1,3 @@
 pytest
 pythainlp
+git+https://github.com/PyThaiNLP/spelling-check.git

@@ -1,3 +1,4 @@
+from re import split
 from process_text import *
 import pytest
 import pathlib
@@ -88,3 +89,32 @@ def test_remove_pintu():
     input = "สฺวากฺขาโต"
 
     assert is_sentence_valid(input) == False
+
+def test_replace_percent():
+    input = "หนึ่งร้อย%"
+    output = "หนึ่งร้อยเปอร์เซ็นต์"
+
+    assert replace_percent(input) == output
+    assert split_sentence(input) == [output]
+
+def test_reject_three_repeating_letters():
+    inputs = ["ไม่รู้จะสาดดดไปไหน", 'ตาเซนนนจีบใครน๊อ']
+
+    for i in inputs:
+        assert is_sentence_valid(i) == False
+
+def test_replace_time():
+    input = "ตั้งแต่เวลา 11.00-22.00 น."
+    output = "ตั้งแต่เวลา สิบเอ็ดจุดศูนย์ถึงยี่สิบสองจุดศูนย์นาฬิกา"
+
+    assert replace_time(input) == output
+
+def test_valid_spellings():
+    input = "สวัสดีครับ"
+
+    assert is_spelling_valid(input) == True
+
+def test_invalid_spellings():
+    input = "สวัสดีฮ๊าฟ"
+
+    assert is_spelling_valid(input) == False
